@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Breadth First Search</title>
+  <script>
+
+    var map = [
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1]
+    ];
+
+    var shadowMap = [
+      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+    ];
+
+    var start = {x: 3, y: 2};
+    var end   = {x: 8, y: 7};
+
+    var queue = [];
+    var from = {};
+    var found = false;
+    var current;
+    var nbs, nb;
+
+    queue.push(start);
+
+    while(queue.length) {
+      current = queue.shift();
+      nbs = getNeighbors(current);
+
+      // loop all neighbors
+      while(true) {
+        // debugger;
+        nb = nbs.next();
+
+
+        if (!nb) { break; }
+
+        if (!from[nb.x + ',' + nb.y]) {
+          from[nb.x + ',' + nb.y] = current;
+          queue.push(nb);
+
+          if (nb.x === end.x && nb.y === end.y) {
+            found = true;
+          }
+        }
+      }
+
+      if (found) {
+        // debugger;
+        console.log('path found!');
+        printPath(end);
+        break;
+      }
+    }
+
+    function printPath(end) {
+      var current = end;
+      
+      while(from[current.x + ',' + current.y]) {
+        current = from[current.x + ',' + current.y];
+        
+        shadowMap[current.y][current.x] = '+';
+
+        if (current.x === start.x && current.y === start.y) {
+          break;
+        }
+      }
+
+      var printMap = '';
+      
+      shadowMap[start.y][start.x] = '#';
+      shadowMap[end.y][end.x] = '$';
+
+      for (var i = 0; i < shadowMap.length; i++) {
+        for (var j = 0; j < shadowMap.length; j++) {
+          printMap = printMap + shadowMap[i][j] + ' ';
+        }
+        printMap += '\n';
+      }
+
+      console.log(printMap);
+    }
+
+    // neighbors iterater
+    function getNeighbors(node) {
+      var nbs = [];
+      if (node.x - 1 >= 0) {
+        nbs.push({
+          x: node.x - 1,
+          y: node.y
+        });
+      }
+
+      if (node.x + 1 <= map.length) {
+        nbs.push({
+          x: node.x + 1,
+          y: node.y
+        });
+      }
+
+      if (node.y - 1 >= 0) {
+        nbs.push({
+          x: node.x,
+          y: node.y - 1
+        });
+      }
+
+      if (node.y + 1 <= map[0].length) {
+        nbs.push({
+          x: node.x,
+          y: node.y + 1
+        });
+      }
+
+      return {
+        next: function() {
+          return nbs.pop();
+        }
+      };
+    }
+
+
+  </script>
+</head>
+<body>
+  <p>See Console</p>
+</body>
+</html>
