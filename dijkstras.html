@@ -3,40 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <title>Breadth First Search</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.5.0/lodash.min.js"></script>
   <script>
 
     var map = [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1]
+      [1, 1, 1, 3, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 8, 1, 1, 1, 1],
+      [1, 4, 3, 6, 1, 1, 8, 1, 1],
+      [1, 1, 4, 1, 1, 1, 1, 1, 5],
+      [1, 1, 1, 1, 1, 8, 1, 8, 1],
+      [1, 1, 5, 2, 5, 1, 1, 6, 1],
+      [1, 1, 1, 1, 1, 1, 1, 6, 4],
+      [1, 1, 1, 6, 7, 1, 1, 1, 4],
+      [1, 1, 1, 1, 1, 9, 1, 5, 1]
     ];
 
     var shadowMap = [
-      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
-      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
-      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
-      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
-      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
-      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
-      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
-      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
-      ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      ['1', '1', '1', '3', '1', '1', '1', '1', '1'],
+      ['1', '1', '1', '1', '8', '1', '1', '1', '1'],
+      ['1', '4', '3', '6', '1', '1', '8', '1', '1'],
+      ['1', '1', '4', '1', '1', '1', '1', '1', '5'],
+      ['1', '1', '1', '1', '1', '8', '1', '8', '1'],
+      ['1', '1', '5', '2', '5', '1', '1', '6', '1'],
+      ['1', '1', '1', '1', '1', '1', '1', '6', '4'],
+      ['1', '1', '1', '6', '7', '1', '1', '1', '4'],
+      ['1', '1', '1', '1', '1', '9', '1', '5', '1']
     ];
 
-    var start = {x: 3, y: 2};
+    var start = {x: 1, y: 0};
     var end   = {x: 8, y: 7};
 
     var queue = [];
+    var cost = {};
     var from = {};
     var found = false;
     var current;
     var nbs, nb;
+
+    cost[start.x + ',' + start.y] = map[start.x][start.y];
 
     queue.push(start);
 
@@ -49,13 +53,16 @@
         // debugger;
         nb = nbs.next();
 
-
         if (!nb) { break; }
 
-        if (!from[nb.x + ',' + nb.y]) {
-          from[nb.x + ',' + nb.y] = current;
-          queue.push(nb);
+        if (!from[nb.x + ',' + nb.y] || cost[current.x + ',' + current.y] + map[nb.x][nb.y] < cost[nb.x + ',' + nb.y]) {
+          if (!from[nb.x + ',' + nb.y]) {
+            queue.push(nb);
+          }
 
+          from[nb.x + ',' + nb.y] = current;
+          cost[nb.x + ',' + nb.y] = cost[current.x + ',' + current.y] + map[nb.x][nb.y];
+       
           if (nb.x === end.x && nb.y === end.y) {
             found = true;
           }
@@ -96,6 +103,7 @@
       }
 
       console.log(printMap);
+      console.log('Cost: ' + cost[end.x + ',' + end.y]);
     }
 
     // neighbors iterater
@@ -108,7 +116,7 @@
         });
       }
 
-      if (node.x + 1 <= map.length) {
+      if (node.x + 1 <= map.length - 1) {
         nbs.push({
           x: node.x + 1,
           y: node.y
@@ -122,12 +130,16 @@
         });
       }
 
-      if (node.y + 1 <= map[0].length) {
+      if (node.y + 1 <= map[0].length - 1) {
         nbs.push({
           x: node.x,
           y: node.y + 1
         });
       }
+
+      nbs = _.sortBy(nbs, function(nb) {
+        return map[nb.x][nb.y];
+      });
 
       return {
         next: function() {
@@ -140,7 +152,7 @@
   </script>
 </head>
 <body>
-  <h1>Breadth First Search</h1>
+  <h1>Dijkstra's Algorithm</h1>
   <p>See Console</p>
 </body>
 </html>
